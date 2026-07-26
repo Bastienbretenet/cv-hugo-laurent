@@ -1,0 +1,9 @@
+# Exclut ce qui n'a pas à être servi
+.git
+.gitignore
+Dockerfile
+docker-compose.yaml
+.dockerignore
+prompt.md
+README.md
+*.md

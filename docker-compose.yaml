@@ -1,0 +1,16 @@
+services:
+  cv:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      # Coolify mappe automatiquement via son proxy (Traefik) ;
+      # le port interne 80 suffit. Coolify lit cette valeur pour router le domaine.
+      - "80"
+    healthcheck:
+      test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 5s

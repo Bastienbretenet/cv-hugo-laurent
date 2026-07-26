@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Hugo Laurent — Accompagnateur de voyages d'aventure</title>
+  <meta name="description" content="Hugo Laurent, accompagnateur de voyages d'aventure : trek, expéditions, immersion culturelle. Concevoir l'aventure, anticiper les imprévus, évoluer en sécurité." />
+
+  <!-- ============================================================
+       FAVICONS
+       ============================================================ -->
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="assets/favicon/favicon-16x16.png" />
+  <link rel="icon" href="assets/favicon/favicon.ico" sizes="any" />
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/favicon/apple-touch-icon.png" />
+  <link rel="manifest" href="assets/favicon/site.webmanifest" />
+  <meta name="theme-color" content="#3F472B" />
+
+  <!-- ============================================================
+       POLICES — Google Fonts
+       Titres : Fraunces (serif à caractère, optique)
+       Corps  : Inter (sans-serif lisible)
+       ============================================================ -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- ============================================================
+       TAILWIND CSS via CDN + configuration de la charte
+       ============================================================ -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            // Charte graphique
+            olive:      '#3F472B', // vert olive / kaki profond — couleur principale
+            'olive-deep': '#2C3220', // nuance foncée — footer, contrastes
+            kaki:       '#5A6340', // kaki plus clair — survols, accents discrets
+            sable:      '#F2EFE6', // beige/sable très clair — fonds alternés
+            'sable-line': '#E4DFD1', // filets discrets sur fond sable
+          },
+          fontFamily: {
+            display: ['Fraunces', 'Georgia', 'serif'],
+            sans:    ['Inter', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    };
+  </script>
+
+  <!-- ============================================================
+       STYLES COMPLÉMENTAIRES — scroll doux, focus, motifs "aventure"
+       ============================================================ -->
+  <style>
+    html { scroll-behavior: smooth; scroll-padding-top: 5rem; }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+    body { -webkit-font-smoothing: antialiased; text-rendering: optimizeLegibility; }
+
+    /* Focus visible et cohérent pour l'accessibilité clavier */
+    a:focus-visible, button:focus-visible {
+      outline: 2px solid #3F472B;
+      outline-offset: 3px;
+      border-radius: 4px;
+    }
+
+    /* Eyebrow / suréclat de section : petites capitales espacées */
+    .eyebrow {
+      font-size: 0.75rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    /* Filet topographique : fines lignes de niveau, motif signature très discret */
+    .topo-divider {
+      height: 40px;
+      background-image:
+        repeating-linear-gradient(180deg, transparent, transparent 11px, rgba(63,71,43,0.06) 11px, rgba(63,71,43,0.06) 12px);
+    }
+
+    /* Chiffre d'altitude — grande numérale de données */
+    .altitude {
+      font-family: 'Fraunces', serif;
+      font-variant-numeric: tabular-nums;
+      line-height: 1;
+    }
+
+    /* État actif du lien de navigation */
+    .nav-link.is-active { color: #3F472B; }
+    .nav-link.is-active::after { transform: scaleX(1); }
+    .nav-link::after {
+      content: '';
+      display: block;
+      height: 1.5px;
+      background: #3F472B;
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.25s ease;
+    }
+    .nav-link:hover::after { transform: scaleX(1); }
+
+    /* Placeholder image — fond kaki clair, libellé centré */
+    .img-placeholder {
+      background-color: #E9E7DB;
+      background-image:
+        repeating-linear-gradient(135deg, rgba(63,71,43,0.05) 0, rgba(63,71,43,0.05) 1px, transparent 1px, transparent 14px);
+      color: #6B7052;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body class="font-sans text-olive-deep bg-white antialiased">
+
+  <!-- Lien d'évitement — accessibilité -->
+  <a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:top-3 focus:left-3 focus:bg-olive focus:text-white focus:px-4 focus:py-2 focus:rounded">Aller au contenu</a>
+
+  <!-- ============================================================
+       HEADER STICKY
+       ============================================================ -->
+  <header class="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-sable-line">
+    <div class="mx-auto max-w-6xl px-5 sm:px-8">
+      <div class="flex items-center justify-between h-16 md:h-20">
+
+        <!-- Identité -->
+        <a href="#hero" class="group flex flex-col leading-tight">
+          <span class="font-display text-lg md:text-xl font-semibold text-olive tracking-tight">Hugo Laurent</span>
+          <span class="text-[11px] md:text-xs text-kaki tracking-wide">Accompagnateur de voyages d'aventure</span>
+        </a>
+
+        <!-- Navigation ancrée (desktop) -->
+        <nav aria-label="Navigation principale" class="hidden lg:flex items-center gap-7 text-sm font-medium text-olive-deep/80">
+          <a href="#parcours"   class="nav-link transition-colors hover:text-olive">Parcours</a>
+          <a href="#experiences" class="nav-link transition-colors hover:text-olive">Expériences</a>
+          <a href="#trek"        class="nav-link transition-colors hover:text-olive">Trek</a>
+          <a href="#plongee"     class="nav-link transition-colors hover:text-olive">Plongée</a>
+          <a href="#contact"     class="nav-link transition-colors hover:text-olive">Contact</a>
+        </nav>
+
+        <!-- CTA (desktop) -->
+        <div class="hidden md:flex items-center gap-3">
+          <a href="mailto:hugo.24@wanadoo.fr"
+             class="inline-flex items-center gap-2 rounded-full bg-olive px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-kaki">
+            <!-- icône enveloppe -->
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            Me contacter
+          </a>
+          <a href="assets/CV_Hugo_Laurent.pdf" download
+             class="inline-flex items-center gap-2 rounded-full border border-olive px-4 py-2 text-sm font-medium text-olive transition-colors hover:bg-sable">
+            <!-- icône téléchargement -->
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/></svg>
+            CV
+          </a>
+          <a href="assets/Portfolio_Hugo_Laurent.pdf" target="_blank" rel="noopener"
+             class="inline-flex items-center gap-2 rounded-full border border-olive px-4 py-2 text-sm font-medium text-olive transition-colors hover:bg-sable">
+            <!-- icône portfolio / carnet -->
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Portfolio
+          </a>
+        </div>
+
+        <!-- Burger (mobile) -->
+        <button id="burger" aria-label="Ouvrir le menu" aria-expanded="false" aria-controls="mobile-menu"
+                class="lg:hidden inline-flex items-center justify-center w-10 h-10 rounded-md text-olive hover:bg-sable transition-colors">
+          <svg id="burger-open" class="w-6 h-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+          <svg id="burger-close" class="w-6 h-6 hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
+        </button>
+      </div>
+    </div>
+
+    <!-- Menu mobile déroulant -->
+    <div id="mobile-menu" class="hidden lg:hidden border-t border-sable-line bg-white">
+      <nav aria-label="Navigation mobile" class="mx-auto max-w-6xl px-5 py-4 flex flex-col gap-1 text-olive-deep">
+        <a href="#parcours"    class="py-2.5 border-b border-sable-line">Parcours</a>
+        <a href="#experiences" class="py-2.5 border-b border-sable-line">Expériences</a>
+        <a href="#trek"        class="py-2.5 border-b border-sable-line">Trek &amp; itinérance</a>
+        <a href="#plongee"     class="py-2.5 border-b border-sable-line">Plongée</a>
+        <a href="#immersion"   class="py-2.5 border-b border-sable-line">Immersion</a>
+        <a href="#contact"     class="py-2.5">Contact</a>
+        <div class="flex flex-col gap-2 pt-4">
+          <a href="mailto:hugo.24@wanadoo.fr" class="text-center rounded-full bg-olive px-4 py-2.5 text-sm font-medium text-white">Me contacter</a>
+          <a href="assets/CV_Hugo_Laurent.pdf" download class="text-center rounded-full border border-olive px-4 py-2.5 text-sm font-medium text-olive">Télécharger le CV</a>
+          <a href="assets/Portfolio_Hugo_Laurent.pdf" target="_blank" rel="noopener" class="text-center rounded-full border border-olive px-4 py-2.5 text-sm font-medium text-olive">Voir le portfolio</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- ============================================================
+         1. HERO — sommet / itinérance
+         ============================================================ -->
+    <section id="hero" class="relative overflow-hidden bg-sable">
+      <!-- Motif topographique très léger en fond -->
+      <svg class="pointer-events-none absolute inset-0 w-full h-full opacity-[0.35]" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+        <defs>
+          <pattern id="topo" width="600" height="600" patternUnits="userSpaceOnUse">
+            <path d="M0,300 C120,240 200,360 320,300 S520,240 600,300" fill="none" stroke="#3F472B" stroke-opacity="0.10" stroke-width="1"/>
+            <path d="M0,360 C120,300 200,420 320,360 S520,300 600,360" fill="none" stroke="#3F472B" stroke-opacity="0.08" stroke-width="1"/>
+            <path d="M0,240 C120,180 200,300 320,240 S520,180 600,240" fill="none" stroke="#3F472B" stroke-opacity="0.08" stroke-width="1"/>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#topo)"/>
+      </svg>
+
+      <div class="relative mx-auto max-w-6xl px-5 sm:px-8 py-16 md:py-24 lg:py-28">
+        <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+
+          <!-- Colonne texte -->
+          <div class="lg:col-span-7">
+            <p class="eyebrow text-kaki mb-4">Trek · Aventure · Immersion culturelle</p>
+            <h1 class="font-display text-4xl sm:text-5xl lg:text-6xl font-semibold text-olive leading-[1.05] tracking-tight">
+              Construire l'aventure,<br class="hidden sm:block" /> évoluer en sécurité.
+            </h1>
+            <p class="mt-6 text-lg text-olive-deep/80 max-w-xl">
+              Construire l'aventure, anticiper les imprévus, évoluer en sécurité — et mettre cette approche au service des voyageurs.
+            </p>
+
+            <div class="mt-8 flex flex-wrap gap-3">
+              <a href="mailto:hugo.24@wanadoo.fr"
+                 class="inline-flex items-center gap-2 rounded-full bg-olive px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-kaki">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                Me contacter
+              </a>
+              <a href="assets/CV_Hugo_Laurent.pdf" download
+                 class="inline-flex items-center gap-2 rounded-full border border-olive px-6 py-3 text-sm font-medium text-olive transition-colors hover:bg-white">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/></svg>
+                Télécharger le CV
+              </a>
+              <a href="assets/Portfolio_Hugo_Laurent.pdf" target="_blank" rel="noopener"
+                 class="inline-flex items-center gap-2 rounded-full border border-olive px-6 py-3 text-sm font-medium text-olive transition-colors hover:bg-white">
+                <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                Voir le portfolio
+              </a>
+            </div>
+
+            <!-- Repères clés -->
+            <dl class="mt-12 grid grid-cols-3 gap-6 max-w-lg border-t border-sable-line pt-6">
+              <div>
+                <dt class="text-2xl font-display font-semibold text-olive">6 088 m</dt>
+                <dd class="text-xs text-kaki mt-1">Altitude atteinte</dd>
+              </div>
+              <div>
+                <dt class="text-2xl font-display font-semibold text-olive">100+</dt>
+                <dd class="text-xs text-kaki mt-1">Plongées</dd>
+              </div>
+              <div>
+                <dt class="text-2xl font-display font-semibold text-olive">3</dt>
+                <dd class="text-xs text-kaki mt-1">Continents parcourus</dd>
+              </div>
+            </dl>
+          </div>
+
+          <!-- Colonne image hero -->
+          <div class="lg:col-span-5">
+            <div class="aspect-[4/5] w-full rounded-2xl overflow-hidden shadow-sm ring-1 ring-black/5">
+              <img src="assets/hero.png" alt="Hugo en itinérance face aux sommets enneigés des Annapurnas" loading="eager" class="w-full h-full object-cover" />
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <div class="topo-divider" aria-hidden="true"></div>
+
+    <!-- ============================================================
+         2. À PROPOS / MON PARCOURS
+         ============================================================ -->
+    <section id="parcours" class="bg-white">
+      <div class="mx-auto max-w-6xl px-5 sm:px-8 py-16 md:py-24">
+        <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 items-start">
+
+          <div class="lg:col-span-4">
+            <p class="eyebrow text-kaki mb-3">À propos</p>
+            <h2 class="font-display text-3xl md:text-4xl font-semibold text-olive leading-tight">Mon parcours</h2>
+            <div class="aspect-[4/5] w-full rounded-2xl mt-8 ring-1 ring-black/5 overflow-hidden">
+              <img src="assets/portrait.png" alt="Portrait de Hugo Laurent lors d'un voyage" loading="lazy" class="w-full h-full object-cover" />
+            </div>
+          </div>
+
+          <div class="lg:col-span-8">
+            <p class="text-lg md:text-xl text-olive-deep/85 leading-relaxed">
+              Après <strong class="font-semibold text-olive">dix années comme responsable de showroom</strong>, je souhaite mettre mes compétences en management, organisation et relation humaine au service de l'accompagnement de groupes.
+            </p>
+            <p class="mt-5 text-base md:text-lg text-olive-deep/75 leading-relaxed">
+              Mes expériences à l'étranger, mon parcours professionnel et ma pratique du trek m'ont permis de développer des compétences en organisation, coordination, sécurité et relation humaine — que je veux aujourd'hui partager avec des groupes francophones.
+            </p>
+
+            <!-- Coordonnées rapides -->
+            <div class="mt-10 grid sm:grid-cols-3 gap-4">
+              <a href="tel:+33651755846" class="group rounded-xl border border-sable-line p-4 hover:border-olive transition-colors">
+                <div class="flex items-center gap-2 text-kaki mb-1">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+                  <span class="eyebrow text-[10px]">Téléphone</span>
+                </div>
+                <span class="text-sm font-medium text-olive">06 51 75 58 46</span>
+              </a>
+              <a href="mailto:hugo.24@wanadoo.fr" class="group rounded-xl border border-sable-line p-4 hover:border-olive transition-colors">
+                <div class="flex items-center gap-2 text-kaki mb-1">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+                  <span class="eyebrow text-[10px]">Email</span>
+                </div>
+                <span class="text-sm font-medium text-olive break-all">hugo.24@wanadoo.fr</span>
+              </a>
+              <a href="https://hugo-travel.fr" target="_blank" rel="noopener" class="group rounded-xl border border-sable-line p-4 hover:border-olive transition-colors">
+                <div class="flex items-center gap-2 text-kaki mb-1">
+                  <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                  <span class="eyebrow text-[10px]">Site perso</span>
+                </div>
+                <span class="text-sm font-medium text-olive">hugo-travel.fr</span>
+              </a>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         3. CE QUE J'APPORTE — cartes atouts
+         ============================================================ -->
+    <section id="atouts" class="bg-sable">
+      <div class="mx-auto max-w-6xl px-5 sm:px-8 py-16 md:py-24">
+        <div class="max-w-2xl mb-12">
+          <p class="eyebrow text-kaki mb-3">Ce que j'apporte</p>
+          <h2 class="font-display text-3xl md:text-4xl font-semibold text-olive leading-tight">Une approche pensée pour le groupe</h2>
+        </div>
+
+        <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5">
+          <!-- Carte 1 -->
+          <article class="rounded-2xl bg-white border border-sable-line p-6 transition-shadow hover:shadow-md">
+            <span class="inline-flex w-11 h-11 items-center justify-center rounded-xl bg-sable text-olive mb-4">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 20-6-3V4l6 3 6-3 6 3v13l-6-3-6 3z"/><path d="M9 7v13M15 4v13"/></svg>
+            </span>
+            <h3 class="font-display text-xl font-semibold text-olive mb-2">Concevoir une expédition</h3>
+            <p class="text-sm text-olive-deep/75 leading-relaxed">Itinéraire, logistique, matériel, budget, ravitaillements, démarches administratives : tout est anticipé avant le départ.</p>
+          </article>
+          <!-- Carte 2 -->
+          <article class="rounded-2xl bg-white border border-sable-line p-6 transition-shadow hover:shadow-md">
+            <span class="inline-flex w-11 h-11 items-center justify-center rounded-xl bg-sable text-olive mb-4">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m3 11 19-9-9 19-2-8-8-2z"/></svg>
+            </span>
+            <h3 class="font-display text-xl font-semibold text-olive mb-2">Évoluer en autonomie</h3>
+            <p class="text-sm text-olive-deep/75 leading-relaxed">Lire une carte, anticiper la météo, gérer son énergie sur la durée : l'autonomie au service de la sécurité du groupe.</p>
+          </article>
+          <!-- Carte 3 -->
+          <article class="rounded-2xl bg-white border border-sable-line p-6 transition-shadow hover:shadow-md">
+            <span class="inline-flex w-11 h-11 items-center justify-center rounded-xl bg-sable text-olive mb-4">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M3 17l6-6 4 4 8-8"/><path d="M14 7h7v7"/></svg>
+            </span>
+            <h3 class="font-display text-xl font-semibold text-olive mb-2">S'adapter au terrain</h3>
+            <p class="text-sm text-olive-deep/75 leading-relaxed">Analyse permanente des conditions (météo, dénivelé, fatigue) pour ajuster itinéraire, rythme et objectifs en sécurité.</p>
+          </article>
+          <!-- Carte 4 -->
+          <article class="rounded-2xl bg-white border border-sable-line p-6 transition-shadow hover:shadow-md">
+            <span class="inline-flex w-11 h-11 items-center justify-center rounded-xl bg-sable text-olive mb-4">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+            </span>
+            <h3 class="font-display text-xl font-semibold text-olive mb-2">Manager une équipe</h3>
+            <p class="text-sm text-olive-deep/75 leading-relaxed">10 ans de management en prêt-à-porter et encadrement SSI Dive Master : fédérer, coordonner, garantir sécurité et qualité.</p>
+          </article>
+          <!-- Carte 5 -->
+          <article class="rounded-2xl bg-white border border-sable-line p-6 transition-shadow hover:shadow-md">
+            <span class="inline-flex w-11 h-11 items-center justify-center rounded-xl bg-sable text-olive mb-4">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </span>
+            <h3 class="font-display text-xl font-semibold text-olive mb-2">Explorer le monde</h3>
+            <p class="text-sm text-olive-deep/75 leading-relaxed">Forte ouverture culturelle et capacité d'adaptation nourries par de nombreux voyages à travers le monde.</p>
+          </article>
+          <!-- Carte 6 -->
+          <article class="rounded-2xl bg-white border border-sable-line p-6 transition-shadow hover:shadow-md">
+            <span class="inline-flex w-11 h-11 items-center justify-center rounded-xl bg-sable text-olive mb-4">
+              <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </span>
+            <h3 class="font-display text-xl font-semibold text-olive mb-2">Accompagnement personnalisé</h3>
+            <p class="text-sm text-olive-deep/75 leading-relaxed">Écoute, adaptation aux besoins de chacun, relation de confiance : chaque voyageur avance à sa juste place.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         4. EXPÉRIENCES — timeline
+         ============================================================ -->
+    <section id="experiences" class="bg-white">
+      <div class="mx-auto max-w-6xl px-5 sm:px-8 py-16 md:py-24">
+        <div class="max-w-2xl mb-12">
+          <p class="eyebrow text-kaki mb-3">Parcours professionnel</p>
+          <h2 class="font-display text-3xl md:text-4xl font-semibold text-olive leading-tight">Expériences</h2>
+        </div>
+
+        <ol class="relative border-l border-sable-line ml-3 space-y-10">
+          <!-- Exp 1 -->
+          <li class="pl-8 relative">
+            <span class="absolute -left-[7px] top-1.5 w-3.5 h-3.5 rounded-full bg-olive ring-4 ring-white" aria-hidden="true"></span>
+            <p class="eyebrow text-kaki text-[11px] mb-1">2022 → aujourd'hui</p>
+            <h3 class="font-display text-xl font-semibold text-olive">Exploration &amp; voyages en autonomie</h3>
+            <p class="mt-2 text-sm text-olive-deep/75 leading-relaxed max-w-2xl">
+              Organisation de voyages en autonomie. Randonnée : GR10, GR20. Trek : Annapurnas (Népal), Salkantay &amp; Santa Cruz (Pérou). Ascensions : Kilimandjaro (Tanzanie), Huayna Potosí (Bolivie), Acatenango &amp; Fuego (Guatemala), Volcan Barú (Panama).
+            </p>
+          </li>
+          <!-- Exp 2 -->
+          <li class="pl-8 relative">
+            <span class="absolute -left-[7px] top-1.5 w-3.5 h-3.5 rounded-full bg-olive ring-4 ring-white" aria-hidden="true"></span>
+            <p class="eyebrow text-kaki text-[11px] mb-1">Février 2024</p>
+            <h3 class="font-display text-xl font-semibold text-olive">SSI Dive Master — Thaïlande</h3>
+            <p class="mt-2 text-sm text-olive-deep/75 leading-relaxed max-w-2xl">
+              Formation en centre de plongée : briefings de sécurité, encadrement, travail en équipe internationale, plongées en groupes.
+            </p>
+          </li>
+          <!-- Exp 3 -->
+          <li class="pl-8 relative">
+            <span class="absolute -left-[7px] top-1.5 w-3.5 h-3.5 rounded-full bg-olive ring-4 ring-white" aria-hidden="true"></span>
+            <p class="eyebrow text-kaki text-[11px] mb-1">2013 → 2022</p>
+            <h3 class="font-display text-xl font-semibold text-olive">Responsable showroom prêt-à-porter — Mathom</h3>
+            <p class="mt-2 text-sm text-olive-deep/75 leading-relaxed max-w-2xl">
+              Management d'équipe, développement commercial, organisation opérationnelle, sens du service client, prise de décision.
+            </p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         5. TREK & ITINÉRANCE — bloc vert foncé, chiffres d'altitude
+         ============================================================ -->
+    <section id="trek" class="relative bg-olive text-white overflow-hidden">
+      <!-- contours topographiques discrets -->
+      <svg class="pointer-events-none absolute inset-0 w-full h-full opacity-20" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+        <rect width="100%" height="100%" fill="url(#topo)"/>
+      </svg>
+
+      <div class="relative mx-auto max-w-6xl px-5 sm:px-8 py-16 md:py-24">
+        <div class="grid lg:grid-cols-12 gap-10 items-start">
+
+          <div class="lg:col-span-5">
+            <p class="eyebrow text-sable/70 mb-3">Trek &amp; itinérance</p>
+            <h2 class="font-display text-3xl md:text-4xl font-semibold leading-tight">Des sommets et des sentiers, en autonomie</h2>
+            <p class="mt-5 text-white/75 leading-relaxed max-w-md">
+              Randonnées longues, treks itinérants et ascensions d'altitude — préparés, portés et menés seul ou en petit comité. La montagne comme école de la sécurité.
+            </p>
+
+            <div class="aspect-[3/2] w-full rounded-2xl mt-8 ring-1 ring-white/10 overflow-hidden">
+              <img src="assets/trek.png" alt="Sommet au lever du jour, piolet en main" loading="lazy" class="w-full h-full object-cover" />
+            </div>
+          </div>
+
+          <div class="lg:col-span-7">
+            <!-- Ascensions marquantes : altitudes en grandes numérales -->
+            <div class="grid sm:grid-cols-3 gap-4 mb-8">
+              <div class="rounded-2xl bg-white/5 border border-white/10 p-5">
+                <div class="altitude text-3xl font-semibold">6 088<span class="text-base font-normal text-white/60"> m</span></div>
+                <p class="text-sm mt-1 text-white/80">Huayna Potosí</p>
+                <p class="text-xs text-white/50">Bolivie</p>
+              </div>
+              <div class="rounded-2xl bg-white/5 border border-white/10 p-5">
+                <div class="altitude text-3xl font-semibold">5 895<span class="text-base font-normal text-white/60"> m</span></div>
+                <p class="text-sm mt-1 text-white/80">Kilimandjaro</p>
+                <p class="text-xs text-white/50">Tanzanie</p>
+              </div>
+              <div class="rounded-2xl bg-white/5 border border-white/10 p-5">
+                <div class="altitude text-3xl font-semibold">3 298<span class="text-base font-normal text-white/60"> m</span></div>
+                <p class="text-sm mt-1 text-white/80">Grand Vignemale</p>
+                <p class="text-xs text-white/50">France · alpinisme</p>
+              </div>
+            </div>
+
+            <!-- Liste des itinéraires -->
+            <ul class="grid sm:grid-cols-2 gap-x-8 gap-y-3 text-sm">
+              <li class="flex gap-3 border-b border-white/10 pb-3"><span class="text-sable/70 shrink-0">GR10 · France</span><span class="text-white/60 ml-auto text-right">1 mois, seul, sous tente</span></li>
+              <li class="flex gap-3 border-b border-white/10 pb-3"><span class="text-sable/70 shrink-0">GR20 · Corse</span><span class="text-white/60 ml-auto text-right">7 jours, autonomie</span></li>
+              <li class="flex gap-3 border-b border-white/10 pb-3"><span class="text-sable/70 shrink-0">Annapurnas · Népal</span><span class="text-white/60 ml-auto text-right">12 jours, autonomie</span></li>
+              <li class="flex gap-3 border-b border-white/10 pb-3"><span class="text-sable/70 shrink-0">Salkantay &amp; Santa Cruz · Pérou</span><span class="text-white/60 ml-auto text-right">itinérants</span></li>
+              <li class="flex gap-3 border-b border-white/10 pb-3"><span class="text-sable/70 shrink-0">Canyon de Colca · Pérou</span><span class="text-white/60 ml-auto text-right">3 jours</span></li>
+              <li class="flex gap-3 border-b border-white/10 pb-3"><span class="text-sable/70 shrink-0">Acatenango &amp; Fuego · Guatemala</span><span class="text-white/60 ml-auto text-right">volcans actifs</span></li>
+              <li class="flex gap-3 border-b border-white/10 pb-3"><span class="text-sable/70 shrink-0">Volcan Barú · Panama</span><span class="text-white/60 ml-auto text-right">de nuit, solo</span></li>
+              <li class="flex gap-3 border-b border-white/10 pb-3"><span class="text-sable/70 shrink-0">Forêt amazonienne</span><span class="text-white/60 ml-auto text-right">Bolivie, Colombie, Guyane</span></li>
+            </ul>
+
+            <!-- Organisation & autonomie -->
+            <div class="mt-8 rounded-2xl bg-white/5 border border-white/10 p-6">
+              <h3 class="font-display text-lg font-semibold mb-2">Organisation &amp; autonomie</h3>
+              <p class="text-sm text-white/75 leading-relaxed">
+                Voyages de plusieurs mois en Amérique du Sud, Asie et Australie. Boucle de Hà Giang (Nord Vietnam), 10 jours à moto en autonomie ; road trip moto dans le sud du Vietnam ; road trip 4x4 en Australie (achat, préparation, logistique, plusieurs milliers de km). Itinéraires adaptés en continu selon les rencontres, conditions et opportunités.
+              </p>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Galerie trek — moments d'itinérance -->
+        <div class="mt-10 grid grid-cols-2 lg:grid-cols-3 gap-4">
+          <div class="aspect-[4/3] rounded-2xl overflow-hidden ring-1 ring-white/10">
+            <img src="assets/trek2.png" alt="Campement au bord d'un lac d'altitude au coucher du soleil, Pérou" loading="lazy" class="w-full h-full object-cover" />
+          </div>
+          <div class="aspect-[4/3] rounded-2xl overflow-hidden ring-1 ring-white/10">
+            <img src="assets/trek3.png" alt="Col de Punta Unión (4 750 m), trek de Santa Cruz au Pérou" loading="lazy" class="w-full h-full object-cover" />
+          </div>
+          <div class="aspect-[4/3] rounded-2xl overflow-hidden ring-1 ring-white/10 col-span-2 lg:col-span-1">
+            <img src="assets/trek4.png" alt="Face au volcan Fuego en éruption au lever du jour, Guatemala" loading="lazy" class="w-full h-full object-cover" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         6. PLONGÉE & MILIEU MARIN
+         ============================================================ -->
+    <section id="plongee" class="bg-white">
+      <div class="mx-auto max-w-6xl px-5 sm:px-8 py-16 md:py-24">
+        <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+
+          <div class="lg:col-span-5 order-2 lg:order-1">
+            <div class="aspect-[4/5] w-full rounded-2xl ring-1 ring-black/5 overflow-hidden">
+              <img src="assets/plongee.png" alt="Plongée en groupe encadrée en milieu tropical" loading="lazy" class="w-full h-full object-cover" />
+            </div>
+          </div>
+
+          <div class="lg:col-span-7 order-1 lg:order-2">
+            <p class="eyebrow text-kaki mb-3">Plongée &amp; milieu marin</p>
+            <h2 class="font-display text-3xl md:text-4xl font-semibold text-olive leading-tight">Encadrement, sécurité et respect du vivant</h2>
+
+            <!-- Chiffres clés -->
+            <div class="mt-8 grid grid-cols-3 gap-4">
+              <div class="rounded-xl bg-sable p-5 text-center">
+                <div class="text-3xl font-display font-semibold text-olive">100+</div>
+                <p class="text-xs text-kaki mt-1">Plongées</p>
+              </div>
+              <div class="rounded-xl bg-sable p-5 text-center">
+                <div class="text-3xl font-display font-semibold text-olive">8</div>
+                <p class="text-xs text-kaki mt-1">Destinations</p>
+              </div>
+              <div class="rounded-xl bg-sable p-5 text-center">
+                <div class="text-3xl font-display font-semibold text-olive">DM</div>
+                <p class="text-xs text-kaki mt-1">SSI Dive Master</p>
+              </div>
+            </div>
+
+            <ul class="mt-8 space-y-4">
+              <li class="flex gap-3">
+                <svg class="w-5 h-5 mt-0.5 text-olive shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                <p class="text-sm text-olive-deep/80 leading-relaxed"><strong class="font-semibold text-olive">Formation SSI Dive Master</strong> en Thaïlande : sécurité, organisation, assistance aux sorties.</p>
+              </li>
+              <li class="flex gap-3">
+                <svg class="w-5 h-5 mt-0.5 text-olive shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                <p class="text-sm text-olive-deep/80 leading-relaxed"><strong class="font-semibold text-olive">Volontariat</strong> en centre de plongée à Tioman (Malaisie) : accueil des plongeurs francophones, préparation matériel, logistique, entretien, navettes bateaux.</p>
+              </li>
+              <li class="flex gap-3">
+                <svg class="w-5 h-5 mt-0.5 text-olive shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                <p class="text-sm text-olive-deep/80 leading-relaxed"><strong class="font-semibold text-olive">Spots</strong> : Raja Ampat, Sipadan, Belize, Philippines, Sri Lanka, Indonésie, Thaïlande, Guadeloupe.</p>
+              </li>
+              <li class="flex gap-3">
+                <svg class="w-5 h-5 mt-0.5 text-olive shrink-0" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6 9 17l-5-5"/></svg>
+                <p class="text-sm text-olive-deep/80 leading-relaxed"><strong class="font-semibold text-olive">Actions locales</strong> : restauration de coraux, nettoyage de plages.</p>
+              </li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         7. DÉCOUVERTE DES TERRITOIRES & IMMERSION CULTURELLE
+         ============================================================ -->
+    <section id="immersion" class="bg-sable">
+      <div class="mx-auto max-w-6xl px-5 sm:px-8 py-16 md:py-24">
+        <div class="grid lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+
+          <div class="lg:col-span-7">
+            <p class="eyebrow text-kaki mb-3">Territoires &amp; culture</p>
+            <h2 class="font-display text-3xl md:text-4xl font-semibold text-olive leading-tight">Comprendre les lieux avant de les traverser</h2>
+            <p class="mt-5 text-base md:text-lg text-olive-deep/80 leading-relaxed max-w-xl">
+              Chaque voyage se prépare par des recherches sur l'histoire, la géographie et le patrimoine. Une culture du terrain qui transforme le passage en rencontre.
+            </p>
+
+            <div class="mt-8 grid sm:grid-cols-3 gap-5">
+              <div>
+                <h3 class="eyebrow text-kaki mb-2">Sites emblématiques</h3>
+                <ul class="text-sm text-olive-deep/80 space-y-1">
+                  <li>Machu Picchu · Pérou</li>
+                  <li>Temples d'Angkor · Cambodge</li>
+                  <li>Ayutthaya · Thaïlande</li>
+                  <li>Chichén Itzá · Mexique</li>
+                </ul>
+              </div>
+              <div>
+                <h3 class="eyebrow text-kaki mb-2">Régions moins fréquentées</h3>
+                <ul class="text-sm text-olive-deep/80 space-y-1">
+                  <li>Sulawesi · Indonésie</li>
+                </ul>
+              </div>
+              <div>
+                <h3 class="eyebrow text-kaki mb-2">Grands espaces</h3>
+                <ul class="text-sm text-olive-deep/80 space-y-1">
+                  <li>Salar d'Uyuni &amp; Sud Lípez · Bolivie</li>
+                  <li>Kakadu &amp; Daintree · Australie</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+
+          <div class="lg:col-span-5">
+            <div class="aspect-[4/5] w-full rounded-2xl ring-1 ring-black/5 overflow-hidden">
+              <img src="assets/immersion2.png" alt="Traversée en pirogue avec un habitant, forêt amazonienne" loading="lazy" class="w-full h-full object-cover" />
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Grands espaces — road trip 4x4 -->
+        <div class="mt-10 aspect-[16/7] w-full rounded-2xl overflow-hidden ring-1 ring-black/5">
+          <img src="assets/immersion.png" alt="Safari en 4x4 dans les grands espaces, préparation logistique en autonomie" loading="lazy" class="w-full h-full object-cover object-bottom" />
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         8. FORMATIONS · CERTIFICATIONS · LANGUES · COMPÉTENCES
+         ============================================================ -->
+    <section id="formations" class="bg-white">
+      <div class="mx-auto max-w-6xl px-5 sm:px-8 py-16 md:py-24">
+        <div class="max-w-2xl mb-12">
+          <p class="eyebrow text-kaki mb-3">Bagage</p>
+          <h2 class="font-display text-3xl md:text-4xl font-semibold text-olive leading-tight">Formations, langues &amp; compétences</h2>
+        </div>
+
+        <div class="grid lg:grid-cols-12 gap-10">
+
+          <!-- Formations & certifications -->
+          <div class="lg:col-span-5">
+            <h3 class="eyebrow text-kaki mb-4">Formations &amp; certifications</h3>
+            <ul class="space-y-4">
+              <li class="rounded-xl border border-sable-line p-4">
+                <p class="font-medium text-olive">Master 2 Commerce International</p>
+                <p class="text-sm text-olive-deep/65">Formasup Campus · 2016 · alternance</p>
+              </li>
+              <li class="rounded-xl border border-sable-line p-4">
+                <p class="font-medium text-olive">Licence Responsable Technico-Commercial France &amp; International</p>
+                <p class="text-sm text-olive-deep/65">Formasup Campus · 2014 · alternance</p>
+              </li>
+              <li class="rounded-xl border border-sable-line p-4">
+                <p class="font-medium text-olive">BTS Négociation Relation Client</p>
+                <p class="text-sm text-olive-deep/65">Cité scolaire Laure Gatet · 2013 · alternance</p>
+              </li>
+              <li class="rounded-xl border border-sable-line p-4">
+                <p class="font-medium text-olive">SSI Divemaster</p>
+                <p class="text-sm text-olive-deep/65">Thaïlande · 2023</p>
+              </li>
+              <li class="rounded-xl border border-sable-line p-4">
+                <p class="font-medium text-olive">Permis B</p>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Langues -->
+          <div class="lg:col-span-3">
+            <h3 class="eyebrow text-kaki mb-4">Langues</h3>
+            <div class="space-y-5">
+              <div>
+                <div class="flex justify-between text-sm mb-1.5"><span class="font-medium text-olive">Français</span><span class="text-kaki text-xs">Langue maternelle</span></div>
+                <div class="h-1.5 rounded-full bg-sable"><div class="h-full rounded-full bg-olive" style="width:100%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-sm mb-1.5"><span class="font-medium text-olive">Anglais</span><span class="text-kaki text-xs">Bon niveau</span></div>
+                <div class="h-1.5 rounded-full bg-sable"><div class="h-full rounded-full bg-olive" style="width:80%"></div></div>
+              </div>
+              <div>
+                <div class="flex justify-between text-sm mb-1.5"><span class="font-medium text-olive">Espagnol</span><span class="text-kaki text-xs">Intermédiaire</span></div>
+                <div class="h-1.5 rounded-full bg-sable"><div class="h-full rounded-full bg-olive" style="width:55%"></div></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Compétences clés -->
+          <div class="lg:col-span-4">
+            <h3 class="eyebrow text-kaki mb-4">Compétences clés</h3>
+            <ul class="flex flex-wrap gap-2">
+              <li class="rounded-full border border-olive/25 bg-sable px-3 py-1.5 text-xs font-medium text-olive">Organisation &amp; logistique d'expédition</li>
+              <li class="rounded-full border border-olive/25 bg-sable px-3 py-1.5 text-xs font-medium text-olive">Gestion de la sécurité</li>
+              <li class="rounded-full border border-olive/25 bg-sable px-3 py-1.5 text-xs font-medium text-olive">Lecture de carte &amp; orientation</li>
+              <li class="rounded-full border border-olive/25 bg-sable px-3 py-1.5 text-xs font-medium text-olive">Gestion des imprévus</li>
+              <li class="rounded-full border border-olive/25 bg-sable px-3 py-1.5 text-xs font-medium text-olive">Management &amp; coordination d'équipe</li>
+              <li class="rounded-full border border-olive/25 bg-sable px-3 py-1.5 text-xs font-medium text-olive">Relation &amp; écoute</li>
+              <li class="rounded-full border border-olive/25 bg-sable px-3 py-1.5 text-xs font-medium text-olive">Autonomie</li>
+              <li class="rounded-full border border-olive/25 bg-sable px-3 py-1.5 text-xs font-medium text-olive">Adaptation au terrain</li>
+            </ul>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ============================================================
+         9. CONTACT / CTA FINAL — bloc vert principal
+         ============================================================ -->
+    <section id="contact" class="relative bg-olive-deep text-white overflow-hidden">
+      <svg class="pointer-events-none absolute inset-0 w-full h-full opacity-20" aria-hidden="true" preserveAspectRatio="xMidYMid slice">
+        <rect width="100%" height="100%" fill="url(#topo)"/>
+      </svg>
+
+      <div class="relative mx-auto max-w-4xl px-5 sm:px-8 py-16 md:py-24 text-center">
+        <p class="eyebrow text-sable/70 mb-4">Travaillons ensemble</p>
+        <h2 class="font-display text-3xl md:text-5xl font-semibold leading-tight">Prêt à confier vos groupes à un accompagnateur qui anticipe.</h2>
+        <p class="mt-5 text-white/75 max-w-xl mx-auto">
+          Agences, tour-opérateurs, accompagnateurs indépendants : discutons de vos itinéraires et de vos besoins d'encadrement.
+        </p>
+
+        <div class="mt-8 flex flex-wrap justify-center gap-3">
+          <a href="mailto:hugo.24@wanadoo.fr"
+             class="inline-flex items-center gap-2 rounded-full bg-white px-6 py-3 text-sm font-semibold text-olive transition-colors hover:bg-sable">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg>
+            hugo.24@wanadoo.fr
+          </a>
+          <a href="assets/CV_Hugo_Laurent.pdf" download
+             class="inline-flex items-center gap-2 rounded-full border border-white/40 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="m7 12 5 5 5-5"/><path d="M5 21h14"/></svg>
+            Télécharger le CV
+          </a>
+          <a href="assets/Portfolio_Hugo_Laurent.pdf" target="_blank" rel="noopener"
+             class="inline-flex items-center gap-2 rounded-full border border-white/40 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-white/10">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+            Voir le portfolio
+          </a>
+        </div>
+
+        <!-- Coordonnées -->
+        <div class="mt-10 flex flex-wrap justify-center gap-x-8 gap-y-2 text-sm text-white/70">
+          <a href="tel:+33651755846" class="inline-flex items-center gap-2 hover:text-white transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.9.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+            06 51 75 58 46
+          </a>
+          <a href="https://hugo-travel.fr" target="_blank" rel="noopener" class="inline-flex items-center gap-2 hover:text-white transition-colors">
+            <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><path d="M2 12h20"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            hugo-travel.fr
+          </a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ============================================================
+       FOOTER
+       ============================================================ -->
+  <footer class="bg-olive text-white/80">
+    <div class="mx-auto max-w-6xl px-5 sm:px-8 py-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <div class="text-center sm:text-left">
+        <p class="font-display text-lg font-semibold text-white">Hugo Laurent</p>
+        <p class="text-xs text-white/60">Accompagnateur de voyages d'aventure — Trek · Aventure · Immersion culturelle</p>
+      </div>
+      <div class="flex items-center gap-6 text-xs text-white/60">
+        <span>© 2026 Hugo Laurent</span>
+        <a href="#hero" class="inline-flex items-center gap-1.5 hover:text-white transition-colors">
+          Haut de page
+          <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m18 15-6-6-6 6"/></svg>
+        </a>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================================================
+       JS VANILLA — menu mobile + état actif de navigation
+       ============================================================ -->
+  <script>
+    // Menu burger mobile
+    (function () {
+      const burger = document.getElementById('burger');
+      const menu = document.getElementById('mobile-menu');
+      const iconOpen = document.getElementById('burger-open');
+      const iconClose = document.getElementById('burger-close');
+
+      function toggle(force) {
+        const open = force !== undefined ? force : menu.classList.contains('hidden');
+        menu.classList.toggle('hidden', !open);
+        iconOpen.classList.toggle('hidden', open);
+        iconClose.classList.toggle('hidden', !open);
+        burger.setAttribute('aria-expanded', String(open));
+        burger.setAttribute('aria-label', open ? 'Fermer le menu' : 'Ouvrir le menu');
+      }
+
+      burger.addEventListener('click', () => toggle());
+      // Ferme le menu au clic sur un lien
+      menu.querySelectorAll('a').forEach((a) => a.addEventListener('click', () => toggle(false)));
+    })();
+
+    // État actif du menu au scroll (scroll-spy)
+    (function () {
+      const links = Array.from(document.querySelectorAll('.nav-link'));
+      const map = new Map();
+      links.forEach((l) => {
+        const id = l.getAttribute('href').slice(1);
+        const sec = document.getElementById(id);
+        if (sec) map.set(sec, l);
+      });
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            links.forEach((l) => l.classList.remove('is-active'));
+            const link = map.get(entry.target);
+            if (link) link.classList.add('is-active');
+          }
+        });
+      }, { rootMargin: '-40% 0px -55% 0px', threshold: 0 });
+
+      map.forEach((_, sec) => observer.observe(sec));
+    })();
+  </script>
+
+</body>
+</html>
