@@ -5,9 +5,8 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      # Coolify mappe automatiquement via son proxy (Traefik) ;
-      # le port interne 80 suffit. Coolify lit cette valeur pour router le domaine.
-      - "80"
+      # Port hôte fixe : l'URL reste identique à chaque build/redéploiement.
+      - "8080:80"
     healthcheck:
       test: ["CMD", "wget", "-q", "--spider", "http://localhost:80/"]
       interval: 30s
