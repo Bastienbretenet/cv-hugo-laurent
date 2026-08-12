@@ -1,0 +1,52 @@
+# ---------------------------------------------------------------
+# Photos de la galerie
+#
+# Les originaux (~110 Mo) restent hors du dépôt : seules les versions
+# optimisées d'assets/gallery/opt/ sont versionnées et déployées.
+# Pour ajouter une photo : la déposer dans assets/gallery/, lancer
+# `make gallery`, puis commiter le fichier généré dans opt/.
+#
+# Les originaux ne sont donc sauvegardés que localement : les conserver
+# ailleurs qu'ici, `make gallery` en a besoin pour régénérer.
+# ---------------------------------------------------------------
+/assets/gallery/*
+!/assets/gallery/opt/
+
+# ---------------------------------------------------------------
+# Métadonnées WSL / Windows
+# ---------------------------------------------------------------
+*:Zone.Identifier
+Thumbs.db
+desktop.ini
+ehthumbs.db
+
+# ---------------------------------------------------------------
+# macOS / Linux
+# ---------------------------------------------------------------
+.DS_Store
+.AppleDouble
+.Spotlight-V100
+.Trashes
+*~
+.fuse_hidden*
+.nfs*
+
+# ---------------------------------------------------------------
+# Éditeurs
+# ---------------------------------------------------------------
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ---------------------------------------------------------------
+# Outils
+# ---------------------------------------------------------------
+node_modules/
+__pycache__/
+*.py[cod]
+.env
+.env.*
+!.env.example
+*.log
+scripts

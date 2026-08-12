@@ -3,6 +3,15 @@
 .gitignore
 Dockerfile
 docker-compose.yaml
+docker-compose.dev.yaml
+scripts
+# nginx.conf est copié explicitement dans /etc/nginx/conf.d, il doit rester
+# dans le contexte de build ; il est simplement exclu de la racine web ci-dessous.
+assets/gallery/*.png
+assets/gallery/*.jpg
+assets/gallery/*.JPG
+assets/gallery/*.jpeg
+!assets/gallery/opt
 .dockerignore
 prompt.md
 README.md
