@@ -281,15 +281,38 @@
       return { name: label, alt: `Photographie : ${label}`, note: '' };
     }
 
-    /* Le listing JSON d'nginx donne le contenu réel du dossier. */
+    /* La liste des photos vient de photos.json, écrit au build à partir du
+       contenu réel du dossier (voir Dockerfile). Si le fichier est absent —
+       en développement, quand les images sont montées à chaud — on retombe
+       sur le listing de répertoire du serveur. */
     async function listPhotos() {
-      const res = await fetch(GALLERY_DIR, { headers: { Accept: 'application/json' } });
-      if (!res.ok) throw new Error('listing indisponible');
-      const entries = await res.json();
-      return entries
-        .filter((e) => e.type === 'file' && IMAGE_RE.test(e.name))
-        .map((e) => e.name)
+      const names = (await fromManifest()) || (await fromDirectoryListing());
+      if (!names) throw new Error('liste des photos indisponible');
+      return names
+        .filter((n) => IMAGE_RE.test(n))
         .sort((a, b) => a.localeCompare(b, 'fr'));
+    }
+
+    async function fromManifest() {
+      try {
+        const res = await fetch(GALLERY_DIR + 'photos.json', { cache: 'no-cache' });
+        if (!res.ok) return null;
+        const list = await res.json();
+        return Array.isArray(list) && list.length ? list : null;
+      } catch {
+        return null;
+      }
+    }
+
+    async function fromDirectoryListing() {
+      try {
+        const res = await fetch(GALLERY_DIR, { headers: { Accept: 'application/json' } });
+        if (!res.ok) return null;
+        const entries = await res.json();
+        return entries.filter((e) => e.type === 'file').map((e) => e.name);
+      } catch {
+        return null;
+      }
     }
 
     const observer = 'IntersectionObserver' in window

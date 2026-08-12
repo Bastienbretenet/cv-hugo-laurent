@@ -13,8 +13,6 @@ services:
       # au lieu de l'écrire en place — le conteneur continuerait alors de servir
       # l'ancienne version.
       - .:/usr/share/nginx/html:ro
-      # Le listing JSON du dossier galerie est servi via cette config.
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
     ports:
       # Port hôte fixe : l'URL reste identique à chaque build/redéploiement.
       - "8080:80"
