@@ -5,13 +5,12 @@ Dockerfile
 docker-compose.yaml
 docker-compose.dev.yaml
 scripts
-# nginx.conf est copié explicitement dans /etc/nginx/conf.d, il doit rester
-# dans le contexte de build ; il est simplement exclu de la racine web ci-dessous.
-assets/gallery/*.png
-assets/gallery/*.jpg
-assets/gallery/*.JPG
-assets/gallery/*.jpeg
-!assets/gallery/opt
+# nginx.conf est copié explicitement dans /etc/nginx/conf.d : il doit rester
+# dans le contexte de build.
+#
+# Les photos d'assets/gallery/ font partie du site. Seul ori/ est exclu :
+# ce sont les originaux (~110 Mo), inutiles en production.
+assets/gallery/ori
 .dockerignore
 prompt.md
 README.md

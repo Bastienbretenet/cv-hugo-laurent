@@ -3,7 +3,7 @@ URL         := http://localhost:8080
 
 .DEFAULT_GOAL := up
 
-.PHONY: up rebuild build down restart logs ps sh gallery clean help
+.PHONY: up rebuild build down restart logs ps sh clean help
 
 ## up: Start the dev container (index.html and assets are live-mounted, no rebuild needed)
 up:
@@ -37,12 +37,6 @@ ps:
 ## sh: Open a shell inside the running container
 sh:
 	$(COMPOSE_DEV) exec cv sh
-
-## gallery: Optimize new photos dropped in assets/gallery/ for the photo wall
-gallery:
-	docker run --rm -u "$$(id -u):$$(id -g)" -e HOME=/tmp \
-	  -v "$$PWD:/site" -w /site python:3.12-slim \
-	  sh -c "pip install --quiet --target /tmp/pylibs Pillow && PYTHONPATH=/tmp/pylibs python3 scripts/optimize-gallery.py"
 
 ## clean: Stop the container and remove its image and volumes
 clean:

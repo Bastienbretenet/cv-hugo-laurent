@@ -1,16 +1,13 @@
 # ---------------------------------------------------------------
 # Photos de la galerie
 #
-# Les originaux (~110 Mo) restent hors du dépôt : seules les versions
-# optimisées d'assets/gallery/opt/ sont versionnées et déployées.
-# Pour ajouter une photo : la déposer dans assets/gallery/, lancer
-# `make gallery`, puis commiter le fichier généré dans opt/.
+# Les images d'assets/gallery/ sont versionnées : le mur les affiche
+# automatiquement, il suffit d'en déposer une nouvelle dans le dossier.
 #
-# Les originaux ne sont donc sauvegardés que localement : les conserver
-# ailleurs qu'ici, `make gallery` en a besoin pour régénérer.
+# Seul ori/ est exclu : il garde les photos d'origine (~110 Mo), trop
+# lourdes pour le dépôt. Elles ne sont sauvegardées que localement.
 # ---------------------------------------------------------------
-/assets/gallery/*
-!/assets/gallery/opt/
+/assets/gallery/ori/
 
 # ---------------------------------------------------------------
 # Métadonnées WSL / Windows

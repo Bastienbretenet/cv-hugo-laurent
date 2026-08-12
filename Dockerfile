@@ -2,7 +2,7 @@
 FROM nginx:1.27-alpine
 
 # Config nginx : listing JSON du dossier galerie + cache des images
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Copie du site (index.html, gallery.html, CV PDF, images) dans la racine web nginx
 COPY . /usr/share/nginx/html/
