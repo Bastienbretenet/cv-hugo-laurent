@@ -208,14 +208,15 @@
 
     <!-- ============================================================
          LE MUR DE PHOTOS
-         Construit au chargement à partir du contenu réel du dossier
-         assets/gallery/opt/ : ajouter une photo ne demande aucune
-         modification de cette page.
+         Construit au chargement à partir de la table PLACES, en bas de
+         page : une clé = une photo. Ajouter une image au mur demande
+         donc deux gestes — déposer le fichier dans assets/gallery/ et
+         ajouter sa clé à PLACES.
          ============================================================ -->
     <section id="wall" class="mx-auto max-w-6xl px-5 sm:px-8 pb-20 md:pb-28">
       <div id="wall-grid" class="wall" aria-busy="true"></div>
 
-      <!-- État de repli si le dossier ne peut pas être lu -->
+      <!-- État de repli si aucune photo n'a pu être affichée -->
       <p id="wall-empty" class="hidden text-sable/60 text-sm border border-white/10 rounded-xl px-5 py-8 text-center">
         Les photos n'ont pas pu être chargées. Rechargez la page pour réessayer.
       </p>
@@ -223,17 +224,32 @@
   </main>
 
   <!-- ============================================================
-       VISIONNEUSE — clic sur une photo pour l'agrandir
+       VISIONNEUSE — clic sur une photo pour l'agrandir, puis
+       navigation d'une photo à l'autre : flèches, clavier, glissement
+       du doigt sur mobile.
        ============================================================ -->
   <div id="viewer" hidden class="fixed inset-0 z-50 bg-olive-deep/95 backdrop-blur-sm flex items-center justify-center p-4"
        role="dialog" aria-modal="true" aria-label="Photo agrandie">
     <button id="viewer-close" aria-label="Fermer la photo"
-            class="absolute top-4 right-4 inline-flex items-center justify-center w-11 h-11 rounded-full border border-sable/30 text-sable transition-colors hover:bg-sable hover:text-olive-deep">
+            class="absolute top-4 right-4 z-10 inline-flex items-center justify-center w-11 h-11 rounded-full border border-sable/30 text-sable transition-colors hover:bg-sable hover:text-olive-deep">
       <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>
     </button>
+
+    <button id="viewer-prev" aria-label="Photo précédente"
+            class="absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center w-11 h-11 rounded-full border border-sable/30 bg-olive-deep/60 text-sable transition-colors hover:bg-sable hover:text-olive-deep">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m15 18-6-6 6-6"/></svg>
+    </button>
+    <button id="viewer-next" aria-label="Photo suivante"
+            class="absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-10 inline-flex items-center justify-center w-11 h-11 rounded-full border border-sable/30 bg-olive-deep/60 text-sable transition-colors hover:bg-sable hover:text-olive-deep">
+      <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m9 18 6-6-6-6"/></svg>
+    </button>
+
     <figure class="max-w-5xl w-full">
       <img id="viewer-img" src="" alt="" class="w-full max-h-[80vh] object-contain rounded-lg" />
-      <figcaption id="viewer-caption" class="mt-3 text-center text-sm text-sable/70"></figcaption>
+      <figcaption class="mt-3 text-center text-sm text-sable/70">
+        <span id="viewer-caption"></span>
+        <span id="viewer-count" class="block mt-1 text-xs text-sable/45 tabular-nums"></span>
+      </figcaption>
     </figure>
   </div>
 
@@ -251,68 +267,37 @@
     document.getElementById('year').textContent = new Date().getFullYear();
 
     const GALLERY_DIR = 'assets/gallery/';
-    const IMAGE_RE = /\.(jpe?g|png|webp|avif)$/i;
+    const EXT = '.jpg';
 
-    /* Transforme "nepal-2.jpg" en "Népal" : le nom de fichier porte le lieu. */
-    /* Chaque lieu : [nom affiché, préposition, note de carnet].
-       Ajouter une entrée ici enrichit la légende, mais rien n'est obligatoire :
-       une photo dont le lieu est inconnu affiche simplement son nom. */
+    /* LE MUR, EN ENTIER.
+       Une clé = une photo, dans l'ordre d'affichage. La clé nomme le fichier
+       attendu dans assets/gallery/ :
+         australie → australie.jpg
+         bolivie2  → bolivie-2.jpg   (le chiffre final devient un suffixe)
+       Valeur : [nom affiché, préposition, note de carnet].
+       Une clé sans fichier correspondant est retirée du mur en silence. */
     const PLACES = {
-      nepal:     ['Népal', 'au', 'Sur le tour des Annapurnas, la lumière tombe tôt derrière les crêtes.'],
-      perou:     ['Pérou', 'au', 'Cordillère des Andes : quatre jours de marche au-dessus de 4 000 m.'],
-      bolivie:   ['Bolivie', 'en', "L'altiplano, où l'horizon ne rencontre plus rien."],
-      borneo:    ['Bornéo', 'à', 'Forêt primaire : on avance au rythme de la chaleur.'],
-      mexique:   ['Mexique', 'au', "Cénotes et eau douce, à l'abri du soleil du Yucatán."],
-      indonesie: ['Indonésie', 'en', "Traversée en bateau, entre deux îles, au lever du jour."],
-      malaisie:  ['Malaisie', 'en', 'Montée avant l\'aube pour attraper la brume sur la canopée.'],
-      australie: ['Australie', 'en', 'Des kilomètres de côte pour soi seul, hors saison.'],
-      bali:      ['Bali', 'à', 'Rizières en terrasses, entretenues à la main depuis des siècles.'],
+      australie:  ['Australie', 'en', 'Deux grandes traversées en 4x4, plus de 10 000 km entre côte Ouest et Outback du Nord.'],
+      bolivie:    ['Bolivie', 'au', "Huayna Potosí, 6 088 m, sommet au lever du soleil."],
+      bolivie2:   ['Bolivie', 'en', "Itinérance en 4x4 de plusieurs jours à travers le Sud Lípez, jusqu’au Salar d’Uyuni."],
+      indonesie2: ['Indonésie', 'à', ' Bali, sommet du Mont Agung, au-dessus de la mer de nuages.'],
+      indonesie3: ['Indonésie', 'à', ' Raja Ampat en Papouasie, sur le ponton avec l’équipe locale.'],
+      indonesie:  ['Indonésie', 'en', "Sulawesi, descente contrôlée le long d’un mur de corail."],
+      malaisie2:  ['Malaisie', 'en', 'Sur l’île de Tioman, action de nettoyage des plages.'],
+      malaisie:   ['Malaisie', 'à', 'Bornéo, trip à moto dans les forêts primaires, sur les traces des orangs-outans.'],
+      mexique:    ['Mexique', 'au', "Chichén Itzá, au coeur du Yucatán."],
+      nepal:      ['Népal', 'au', 'Trek des Annapurnas, dans l\'immensité blanche.'],
+      perou:      ['Pérou', 'au', 'Cordillère des Andes : quatre jours de marche au-dessus de 4 000 m.'],
+      perou2:     ['Pérou', 'au', 'Machu Picchu, après 4 jours de marche dans la Cordillère des Andes.'],
+      tanzanie:   ['Tanzanie', 'au', 'Kilimandjaro - 5895m, sur le toit de l’Afrique.'],
+      vietnam:    ['Vietnam', 'au', 'Un mois à la découverte du delta du Mékong, à moto.'],
     };
 
-    /* "nepal-2.jpg" → { name: "Népal", alt: "… au Népal", note: … } : le nom de
-       fichier porte le lieu. Un lieu inconnu reste lisible sans réglage. */
-    function placeFor(filename) {
-      const base = filename.replace(IMAGE_RE, '').replace(/-\d+$/, '').toLowerCase();
-      const known = PLACES[base];
-      if (known) {
-        return { name: known[0], alt: `Photographie prise ${known[1]} ${known[0]}`, note: known[2] };
-      }
-      const label = base.replace(/[-_]+/g, ' ').replace(/^\w/, (c) => c.toUpperCase());
-      return { name: label, alt: `Photographie : ${label}`, note: '' };
-    }
-
-    /* La liste des photos vient de photos.json, écrit au build à partir du
-       contenu réel du dossier (voir Dockerfile). Si le fichier est absent —
-       en développement, quand les images sont montées à chaud — on retombe
-       sur le listing de répertoire du serveur. */
-    async function listPhotos() {
-      const names = (await fromManifest()) || (await fromDirectoryListing());
-      if (!names) throw new Error('liste des photos indisponible');
-      return names
-        .filter((n) => IMAGE_RE.test(n))
-        .sort((a, b) => a.localeCompare(b, 'fr'));
-    }
-
-    async function fromManifest() {
-      try {
-        const res = await fetch(GALLERY_DIR + 'photos.json', { cache: 'no-cache' });
-        if (!res.ok) return null;
-        const list = await res.json();
-        return Array.isArray(list) && list.length ? list : null;
-      } catch {
-        return null;
-      }
-    }
-
-    async function fromDirectoryListing() {
-      try {
-        const res = await fetch(GALLERY_DIR, { headers: { Accept: 'application/json' } });
-        if (!res.ok) return null;
-        const entries = await res.json();
-        return entries.filter((e) => e.type === 'file').map((e) => e.name);
-      } catch {
-        return null;
-      }
+    /* Clé → fichier. Le chiffre final, s'il existe, devient un suffixe :
+       "australie" → assets/gallery/australie.jpg
+       "bolivie2"  → assets/gallery/bolivie-2.jpg */
+    function fileFor(key) {
+      return GALLERY_DIR + key.replace(/(\d+)$/, '-$1') + EXT;
     }
 
     const observer = 'IntersectionObserver' in window
@@ -326,24 +311,40 @@
         }, { rootMargin: '80px' })
       : null;
 
-    function render(files) {
+    /* Les photos réellement affichées, dans l'ordre du mur. C'est aussi
+       l'ordre de défilement de la visionneuse : une entrée dont le fichier
+       manque est retirée d'ici en même temps que du mur. */
+    const shots = [];
+
+    function render() {
       const grid = document.getElementById('wall-grid');
+      const empty = document.getElementById('wall-empty');
       const fragment = document.createDocumentFragment();
+      const entries = Object.entries(PLACES);
 
-      files.forEach((name, i) => {
-        const place = placeFor(name);
-
+      entries.forEach(([key, [name, preposition, note]], i) => {
         const figure = document.createElement('figure');
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'shot';
-        button.setAttribute('aria-label', `Agrandir la photo : ${place.name}`);
+        button.setAttribute('aria-label', `Agrandir la photo : ${name}`);
 
         const img = document.createElement('img');
-        img.src = GALLERY_DIR + name;
-        img.alt = place.alt;
+        img.src = fileFor(key);
+        img.alt = `Photographie prise ${preposition} ${name}`;
         img.loading = i < 4 ? 'eager' : 'lazy';
         img.decoding = 'async';
+
+        const shot = { src: img.src, name, note };
+        shots.push(shot);
+
+        // Fichier absent : l'entrée quitte le mur et le fil de la visionneuse.
+        img.addEventListener('error', () => {
+          figure.remove();
+          const at = shots.indexOf(shot);
+          if (at !== -1) shots.splice(at, 1);
+          if (!grid.querySelector('figure')) empty.classList.remove('hidden');
+        });
 
         // Ardoise posée sur la photo : lieu, puis note de carnet si elle existe.
         const slate = document.createElement('figcaption');
@@ -351,14 +352,14 @@
 
         const placeLine = document.createElement('span');
         placeLine.className = 'slate-place';
-        placeLine.textContent = place.name;
+        placeLine.textContent = name;
         slate.appendChild(placeLine);
 
-        if (place.note) {
-          const note = document.createElement('span');
-          note.className = 'slate-note';
-          note.textContent = place.note;
-          slate.appendChild(note);
+        if (note) {
+          const noteLine = document.createElement('span');
+          noteLine.className = 'slate-note';
+          noteLine.textContent = note;
+          slate.appendChild(noteLine);
         }
 
         button.appendChild(img);
@@ -366,11 +367,13 @@
         figure.appendChild(button);
         fragment.appendChild(figure);
 
-        button.addEventListener('click', () => openViewer(img.src, place.name, place.note));
+        button.addEventListener('click', () => openViewer(shots.indexOf(shot)));
       });
 
       grid.appendChild(fragment);
       grid.removeAttribute('aria-busy');
+      if (!entries.length) empty.classList.remove('hidden');
+
       grid.querySelectorAll('figure').forEach((fig) => {
         if (observer) observer.observe(fig);
         else fig.classList.add('is-visible');
@@ -381,16 +384,48 @@
     const viewer = document.getElementById('viewer');
     const viewerImg = document.getElementById('viewer-img');
     const viewerCaption = document.getElementById('viewer-caption');
+    const viewerCount = document.getElementById('viewer-count');
+    const viewerClose = document.getElementById('viewer-close');
+    const viewerPrev = document.getElementById('viewer-prev');
+    const viewerNext = document.getElementById('viewer-next');
+    let current = 0;
     let lastFocused = null;
 
-    function openViewer(src, place, note) {
+    /* Affiche la photo d'indice i. Le fil est circulaire : après la dernière
+       vient la première, et inversement. */
+    function show(i) {
+      if (!shots.length) return;
+      current = (i + shots.length) % shots.length;
+      const shot = shots[current];
+
+      viewerImg.src = shot.src;
+      viewerImg.alt = `Photographie : ${shot.name}`;
+      viewerCaption.textContent = shot.note ? `${shot.name} — ${shot.note}` : shot.name;
+      viewerCount.textContent = `${current + 1} / ${shots.length}`;
+
+      // Une seule photo : les flèches n'ont rien à faire là. On bascule la
+      // classe plutôt que l'attribut : « hidden » est la dernière utilitaire
+      // d'affichage de Tailwind, elle l'emporte donc sur « inline-flex ».
+      const solo = shots.length < 2;
+      viewerPrev.classList.toggle('hidden', solo);
+      viewerNext.classList.toggle('hidden', solo);
+
+      // La suivante et la précédente sont préchargées : le défilement ne
+      // laisse pas de cadre vide le temps du téléchargement.
+      if (!solo) {
+        [current + 1, current - 1].forEach((n) => {
+          const neighbour = shots[(n + shots.length) % shots.length];
+          new Image().src = neighbour.src;
+        });
+      }
+    }
+
+    function openViewer(i) {
       lastFocused = document.activeElement;
-      viewerImg.src = src;
-      viewerImg.alt = `Photographie : ${place}`;
-      viewerCaption.textContent = note ? `${place} — ${note}` : place;
+      show(i);
       viewer.hidden = false;
       document.body.style.overflow = 'hidden';
-      document.getElementById('viewer-close').focus();
+      viewerClose.focus();
     }
 
     function closeViewer() {
@@ -400,21 +435,39 @@
       if (lastFocused) lastFocused.focus();
     }
 
-    document.getElementById('viewer-close').addEventListener('click', closeViewer);
+    viewerClose.addEventListener('click', closeViewer);
+    viewerPrev.addEventListener('click', () => show(current - 1));
+    viewerNext.addEventListener('click', () => show(current + 1));
+
+    // Clic à côté de la photo : fermeture. Les boutons, eux, arrêtent le clic.
     viewer.addEventListener('click', (e) => { if (e.target === viewer) closeViewer(); });
+
     document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && !viewer.hidden) closeViewer();
+      if (viewer.hidden) return;
+      if (e.key === 'Escape') closeViewer();
+      else if (e.key === 'ArrowLeft') show(current - 1);
+      else if (e.key === 'ArrowRight') show(current + 1);
     });
 
-    listPhotos()
-      .then((files) => {
-        if (!files.length) throw new Error('dossier vide');
-        render(files);
-      })
-      .catch(() => {
-        document.getElementById('wall-grid').removeAttribute('aria-busy');
-        document.getElementById('wall-empty').classList.remove('hidden');
-      });
+    /* Glissement du doigt : un mouvement horizontal franc, et plus marqué que
+       le vertical, pour ne pas confisquer le défilement de la page. */
+    let touchX = 0;
+    let touchY = 0;
+
+    viewer.addEventListener('touchstart', (e) => {
+      touchX = e.changedTouches[0].clientX;
+      touchY = e.changedTouches[0].clientY;
+    }, { passive: true });
+
+    viewer.addEventListener('touchend', (e) => {
+      const dx = e.changedTouches[0].clientX - touchX;
+      const dy = e.changedTouches[0].clientY - touchY;
+      if (Math.abs(dx) > 45 && Math.abs(dx) > Math.abs(dy)) {
+        show(dx < 0 ? current + 1 : current - 1);
+      }
+    }, { passive: true });
+
+    render();
   </script>
 </body>
 </html>

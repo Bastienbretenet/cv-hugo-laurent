@@ -38,15 +38,6 @@ ps:
 sh:
 	$(COMPOSE_DEV) exec cv sh
 
-## photos: Refresh the photo wall listing after adding images to assets/gallery/
-photos:
-	@cd assets/gallery && ls -1 \
-	  | grep -Ei '\.(jpe?g|png|webp|avif)$$' \
-	  | sort \
-	  | awk 'BEGIN { printf "[" } { printf "%s\"%s\"", (NR > 1 ? "," : ""), $$0 } END { print "]" }' \
-	  > photos.json
-	@echo "$$(grep -o '\.jpg\|\.jpeg\|\.png\|\.webp\|\.avif' assets/gallery/photos.json | wc -l) photo(s) dans le mur"
-
 ## clean: Stop the container and remove its image and volumes
 clean:
 	$(COMPOSE_DEV) down --rmi local --volumes
